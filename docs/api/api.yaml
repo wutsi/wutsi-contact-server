@@ -1,0 +1,84 @@
+openapi: "3.0.0"
+info:
+  title: "Wutsi Contact API"
+  description: |
+    API for managing contacts
+  version: "1.0.0"
+
+servers:
+  - url: https://wutsi-contact-server-test.herokuapp.com
+    description: Sandbox
+  - url: https://wutsi-contact-server-prod.herokuapp.com
+    description: Production
+
+paths:
+  /v1/contacts/search:
+    post:
+      operationId: "search-contact"
+      description: Search contact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchContactRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchContactResponse'
+      tags:
+        - contact
+      security:
+        - api_key: [ 'contact-read' ]
+
+components:
+  securitySchemes:
+    api_key:
+      type: apiKey
+      in: header
+      name: Authorization
+
+  schemas:
+    Contact:
+      type: object
+      properties:
+        accountId:
+          type: integer
+          format: int64
+          description: ID of the account
+        contactId:
+          type: integer
+          format: int64
+          description: ID of the contact
+        created:
+          type: string
+          format: date-time
+          description: Creation date time
+
+    SearchContactRequest:
+      type: object
+      properties:
+        accountId:
+          type: integer
+          format: int64
+        tenantId:
+          type: integer
+          format: int64
+          description: ID of the tenant
+        limit:
+          type: integer
+          default: 30
+        offset:
+          type: integer
+          default: 0
+
+    SearchContactResponse:
+      type: object
+      properties:
+        contacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Contact"
