@@ -2,6 +2,7 @@ package com.wutsi.platform.contact.event
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.wutsi.platform.contact.service.ContactService
+import com.wutsi.platform.contact.service.PhoneService
 import com.wutsi.platform.core.logging.RequestKVLogger
 import com.wutsi.platform.core.stream.Event
 import com.wutsi.platform.payment.event.EventURN
@@ -13,7 +14,8 @@ import org.springframework.stereotype.Service
 @Service
 class EventHandler(
     private val objectMapper: ObjectMapper,
-    private val service: ContactService,
+    private val contactService: ContactService,
+    private val phoneService: PhoneService,
 ) {
     companion object {
         private val LOGGER = LoggerFactory.getLogger(EventHandler::class.java)
@@ -28,6 +30,9 @@ class EventHandler(
                 /* When a transfer is complete, add the recipient into the contact list of the sender */
                 addContact(payload)
             }
+        } else if (com.wutsi.platform.contact.event.EventURN.SYNC_REQUESTED.urn == event.type) {
+            val payload = objectMapper.readValue(event.payload, SyncContactPayload::class.java)
+            sync(payload)
         }
     }
 
@@ -41,7 +46,7 @@ class EventHandler(
         logger.add("recipient_id", payload.recipientId)
 
         try {
-            val contact = service.addContact(payload)
+            val contact = contactService.addContact(payload)
 
             logger.add("contact_added", contact != null)
         } catch (ex: Exception) {
@@ -49,6 +54,24 @@ class EventHandler(
             throw ex
         } finally {
             logger.log()
+        }
+    }
+
+    private fun sync(payload: SyncContactPayload) {
+        val logger = RequestKVLogger()
+        payload.phoneNumbers.forEach {
+            logger.add("phone_number", it)
+            logger.add("account_id", payload.accountId)
+            logger.add("tenant_id", payload.tenantId)
+            try {
+                val phone = phoneService.addPhone(payload.accountId, payload.tenantId, it)
+                logger.add("phone_added", phone != null)
+            } catch (ex: Exception) {
+                logger.setException(ex)
+                throw ex
+            } finally {
+                logger.log()
+            }
         }
     }
 }

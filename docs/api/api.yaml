@@ -34,6 +34,29 @@ paths:
       security:
         - api_key: [ 'contact-read' ]
 
+  /v1/contacts/sync:
+    post:
+      operationId: "sync-contacts"
+      description: Sync the contact list of an account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyncContactRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncContactResponse'
+      tags:
+        - contact
+      security:
+        - api_key: [ 'contact-manage' ]
+
+
 components:
   securitySchemes:
     api_key:
@@ -64,6 +87,7 @@ components:
         accountId:
           type: integer
           format: int64
+          description: ID of the account
         tenantId:
           type: integer
           format: int64
@@ -82,3 +106,25 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ContactSummary"
+
+    SyncContactRequest:
+      type: object
+      properties:
+        accountId:
+          type: integer
+          format: int64
+        tenantId:
+          type: integer
+          format: int64
+          description: ID of the tenant
+        phoneNumbers:
+          type: array
+          items:
+            type: string
+
+    SyncContactResponse:
+      type: object
+      properties:
+        contacts:
+          type: integer
+          format: int64
