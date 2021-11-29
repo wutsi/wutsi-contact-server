@@ -42,7 +42,7 @@ components:
       name: Authorization
 
   schemas:
-    Contact:
+    ContactSummary:
       type: object
       properties:
         accountId:
@@ -81,4 +81,4 @@ components:
         contacts:
           type: array
           items:
-            $ref: "#/components/schemas/Contact"
+            $ref: "#/components/schemas/ContactSummary"

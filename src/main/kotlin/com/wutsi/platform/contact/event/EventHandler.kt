@@ -25,6 +25,7 @@ class EventHandler(
         if (EventURN.TRANSACTION_SUCCESSFULL.urn == event.type) {
             val payload = objectMapper.readValue(event.payload, TransactionEventPayload::class.java)
             if (payload.type == "TRANSFER") {
+                /* When a transfer is complete, add the recipient into the contact list of the sender */
                 addContact(payload)
             }
         }
