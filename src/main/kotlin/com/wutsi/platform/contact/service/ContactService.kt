@@ -12,9 +12,9 @@ import javax.transaction.Transactional
 class ContactService(
     private val dao: ContactRepository,
 ) {
-    fun search(request: SearchContactRequest): List<ContactEntity> {
+    fun search(request: SearchContactRequest, tenantId: Long): List<ContactEntity> {
         val pageable = PageRequest.of(request.offset / request.limit, request.limit)
-        return dao.findByAccountIdAndTenantId(request.accountId, request.tenantId, pageable)
+        return dao.findByAccountIdAndTenantId(request.accountId, tenantId, pageable)
     }
 
     @Transactional

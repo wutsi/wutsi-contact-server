@@ -2,6 +2,7 @@ package com.wutsi.platform.contact.endpoint
 
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.eq
+import com.nhaarman.mockitokotlin2.verify
 import com.wutsi.platform.contact.dto.SyncContactRequest
 import com.wutsi.platform.contact.dto.SyncContactResponse
 import com.wutsi.platform.contact.event.EventURN
@@ -34,17 +35,17 @@ public class SyncContactsControllerTest : AbstractSecuredController() {
     @Test
     public fun invoke() {
         val request = SyncContactRequest(
-            accountId = 111L,
-            tenantId = 555L,
             phoneNumbers = listOf("a", "b", "c")
         )
         val response = rest.postForEntity(url, request, SyncContactResponse::class.java)
 
         assertEquals(200, response.statusCodeValue)
 
-        assertEquals(request.accountId, response.body.accountId)
-
         val payload = argumentCaptor<SyncContactPayload>()
-        stream.enqueue(eq(EventURN.SYNC_REQUESTED.urn), payload.capture())
+        verify(stream).enqueue(eq(EventURN.SYNC_REQUESTED.urn), payload.capture())
+
+        assertEquals(1L, payload.firstValue.tenantId)
+        assertEquals(1L, payload.firstValue.accountId)
+        assertEquals(listOf("a", "b", "c"), payload.firstValue.phoneNumbers)
     }
 }

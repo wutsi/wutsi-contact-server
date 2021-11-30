@@ -24,7 +24,7 @@ abstract class AbstractSecuredController {
 
     @BeforeEach
     open fun setUp() {
-        tracingContext = TestTracingContext()
+        tracingContext = TestTracingContext(tenantId = "1")
         apiKeyProvider = TestApiKeyProvider("00000000-00000000-00000000-00000000")
 
         rest = createResTemplate()
@@ -32,7 +32,7 @@ abstract class AbstractSecuredController {
 
     protected fun createResTemplate(
         scope: List<String> = listOf("contact-read", "contact-manage"),
-        subjectId: Long = -1,
+        subjectId: Long = 1,
         subjectType: SubjectType = USER,
         admin: Boolean = false
     ): RestTemplate {

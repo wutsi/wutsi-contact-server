@@ -29,7 +29,6 @@ public class SearchContactControllerTest : AbstractSecuredController() {
         // WHEN
         val request = SearchContactRequest(
             accountId = 100L,
-            tenantId = 1L
         )
         val response = rest.postForEntity(url, request, SearchContactResponse::class.java)
 
@@ -48,7 +47,6 @@ public class SearchContactControllerTest : AbstractSecuredController() {
         // WHEN
         val request = SearchContactRequest(
             accountId = 999L,
-            tenantId = 1L
         )
         val response = rest.postForEntity(url, request, SearchContactResponse::class.java)
 
