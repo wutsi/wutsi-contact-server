@@ -28,9 +28,6 @@ class EventHandler(
         if (EventURN.TRANSACTION_SUCCESSFULL.urn == event.type) {
             val payload = objectMapper.readValue(event.payload, TransactionEventPayload::class.java)
             onTransactionSuccessful(payload)
-        } else if (com.wutsi.platform.contact.event.EventURN.SYNC_REQUESTED.urn == event.type) {
-            val payload = objectMapper.readValue(event.payload, SyncContactPayload::class.java)
-            onSyncRequested(payload)
         } else if (com.wutsi.platform.account.event.EventURN.ACCOUNT_CREATED.urn == event.type) {
             val payload = objectMapper.readValue(event.payload, AccountCreatedPayload::class.java)
             onAccountCreated(payload)
@@ -58,21 +55,6 @@ class EventHandler(
         }
     }
 
-    private fun onSyncRequested(payload: SyncContactPayload) {
-        val logger = RequestKVLogger()
-        payload.phoneNumbers.forEach {
-            logger.add("phone_number", it)
-            logger.add("account_id", payload.accountId)
-            logger.add("tenant_id", payload.tenantId)
-            try {
-                val phone = phoneService.addPhone(payload.accountId, payload.tenantId, it)
-                logger.add("phone_added", phone != null)
-            } finally {
-                logger.log()
-            }
-        }
-    }
-
     private fun onAccountCreated(payload: AccountCreatedPayload) {
         val logger = RequestKVLogger()
         logger.add("tenant_id", payload.tenantId)
@@ -80,8 +62,8 @@ class EventHandler(
         logger.add("phone_number", payload.phoneNumber)
 
         try {
-            val oount = phoneService.addContacts(payload)
-            logger.add("count", oount)
+            val count = phoneService.addContacts(payload)
+            logger.add("count", count)
         } finally {
             logger.log()
         }

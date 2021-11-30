@@ -5,7 +5,6 @@ import com.wutsi.platform.account.event.AccountCreatedPayload
 import com.wutsi.platform.contact.dao.PhoneRepository
 import com.wutsi.platform.contact.entity.PhoneEntity
 import org.springframework.stereotype.Service
-import javax.transaction.Transactional
 
 @Service
 class PhoneService(
@@ -13,7 +12,6 @@ class PhoneService(
     private val contactService: ContactService,
     private val phoneUtil: PhoneNumberUtil,
 ) {
-    @Transactional
     fun addPhone(accountId: Long, tenantId: Long, phoneNumber: String): PhoneEntity? {
         val xphoneNumber = normalizePhone(phoneNumber)
         val opt = dao.findByAccountIdAndNumberAndTenantId(accountId, xphoneNumber, tenantId)
@@ -29,7 +27,6 @@ class PhoneService(
         )
     }
 
-    @Transactional
     fun addContacts(payload: AccountCreatedPayload): Int {
         val phones = dao.findByNumberAndTenantId(normalizePhone(payload.phoneNumber), payload.tenantId)
         var added = 0

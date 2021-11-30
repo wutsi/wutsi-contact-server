@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.jdbc.Sql
 import java.util.UUID
-import kotlin.test.assertEquals
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(value = ["/db/clean.sql", "/db/EventHandler.sql"])
@@ -75,33 +74,6 @@ internal class EventHandlerTest {
         recipientId = recipientId,
         userId = userId,
         transactionId = UUID.randomUUID().toString()
-    )
-
-    // Sync
-    @Test
-    fun onSync() {
-        // GIVEN
-        val payload = createSyncPayload(100, listOf("237699505678", "237699505679"))
-
-        // WHEN
-        val event = Event(
-            type = com.wutsi.platform.contact.event.EventURN.SYNC_REQUESTED.urn,
-            payload = objectMapper.writeValueAsString(payload)
-        )
-        eventHandler.onEvent(event)
-
-        // THEN
-        val phones = phoneDao.findByAccountIdAndTenantId(100, 1).sortedBy { it.number }
-
-        assertEquals(2, phones.size)
-        assertEquals("+237699505678", phones[0].number)
-        assertEquals("+237699505679", phones[1].number)
-    }
-
-    private fun createSyncPayload(accountId: Long, phoneNumbers: List<String>) = SyncContactPayload(
-        tenantId = 1L,
-        accountId = accountId,
-        phoneNumbers = phoneNumbers
     )
 
     // AccountCreated
