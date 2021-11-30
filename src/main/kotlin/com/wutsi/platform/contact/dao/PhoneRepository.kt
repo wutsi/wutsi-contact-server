@@ -9,6 +9,8 @@ import java.util.Optional
 interface PhoneRepository : CrudRepository<PhoneEntity, Long> {
     fun findByAccountIdAndTenantId(accountId: Long, tenantId: Long): List<PhoneEntity>
 
+    fun findByNumberAndTenantId(number: String, tenantId: Long): List<PhoneEntity>
+
     fun findByAccountIdAndNumberAndTenantId(
         accountId: Long,
         number: String,

@@ -1,6 +1,7 @@
 package com.wutsi.platform.contact.event
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.wutsi.platform.account.event.AccountCreatedPayload
 import com.wutsi.platform.contact.dao.ContactRepository
 import com.wutsi.platform.contact.dao.PhoneRepository
 import com.wutsi.platform.core.stream.Event
@@ -29,7 +30,7 @@ internal class EventHandlerTest {
     @Autowired
     private lateinit var phoneDao: PhoneRepository
 
-    // Transfer Test
+    // Transfer
     @Test
     fun onTransferCreateContact() {
         // GIVEN
@@ -76,7 +77,7 @@ internal class EventHandlerTest {
         transactionId = UUID.randomUUID().toString()
     )
 
-    // Sync Tests
+    // Sync
     @Test
     fun onSync() {
         // GIVEN
@@ -101,5 +102,31 @@ internal class EventHandlerTest {
         tenantId = 1L,
         accountId = accountId,
         phoneNumbers = phoneNumbers
+    )
+
+    // AccountCreated
+    @Test
+    @Sql(value = ["/db/clean.sql", "/db/EventHandler.sql"])
+    fun onAccountCreated() {
+        // GIVEN
+        val payload = createAccountCreatedPayload(555L, "+237699505678")
+
+        // WHEN
+        val event = Event(
+            type = com.wutsi.platform.account.event.EventURN.ACCOUNT_CREATED.urn,
+            payload = objectMapper.writeValueAsString(payload)
+        )
+        eventHandler.onEvent(event)
+
+        // THEN
+        val contact =
+            contactDao.findByAccountIdAndContactIdAndTenantId(100, payload.accountId, payload.tenantId)
+        assertTrue(contact.isPresent)
+    }
+
+    private fun createAccountCreatedPayload(accountId: Long, phoneNumber: String) = AccountCreatedPayload(
+        accountId = accountId,
+        tenantId = 1,
+        phoneNumber = phoneNumber
     )
 }

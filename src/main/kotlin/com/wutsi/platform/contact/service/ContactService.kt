@@ -10,7 +10,7 @@ import javax.transaction.Transactional
 
 @Service
 class ContactService(
-    private val dao: ContactRepository
+    private val dao: ContactRepository,
 ) {
     fun search(request: SearchContactRequest): List<ContactEntity> {
         val pageable = PageRequest.of(request.offset / request.limit, request.limit)
@@ -21,16 +21,20 @@ class ContactService(
     fun addContact(payload: TransactionEventPayload): ContactEntity? {
         if (payload.recipientId == null)
             return null
+        return addContact(payload.userId, payload.recipientId!!, payload.tenantId)
+    }
 
-        val opt = dao.findByAccountIdAndContactIdAndTenantId(payload.userId, payload.recipientId!!, payload.tenantId)
+    @Transactional
+    fun addContact(accountId: Long, contactId: Long, tenantId: Long): ContactEntity? {
+        val opt = dao.findByAccountIdAndContactIdAndTenantId(accountId, contactId, tenantId)
         if (opt.isPresent)
             return null
 
         return dao.save(
             ContactEntity(
-                accountId = payload.userId,
-                contactId = payload.recipientId!!,
-                tenantId = payload.tenantId
+                accountId = accountId,
+                contactId = contactId,
+                tenantId = tenantId
             )
         )
     }
