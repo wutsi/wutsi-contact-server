@@ -30,7 +30,7 @@ abstract class AbstractSecuredController {
         rest = createResTemplate()
     }
 
-    protected fun createResTemplate(
+    fun createResTemplate(
         scope: List<String> = listOf("contact-read", "contact-manage"),
         subjectId: Long = 1,
         subjectType: SubjectType = USER,

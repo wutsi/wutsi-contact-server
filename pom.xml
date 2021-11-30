@@ -36,7 +36,7 @@
     <flyway.version>8.1.0</flyway.version>
     <wutsi-account.version>1.0.15</wutsi-account.version>
     <wutsi-payment.version>0.0.14</wutsi-payment.version>
-    <wutsi-platform-core.version>0.0.74</wutsi-platform-core.version>
+    <wutsi-platform-core.version>0.0.76</wutsi-platform-core.version>
   </properties>
 
   <dependencies>
