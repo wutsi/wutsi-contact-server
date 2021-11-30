@@ -88,10 +88,6 @@ components:
           type: integer
           format: int64
           description: ID of the account
-        tenantId:
-          type: integer
-          format: int64
-          description: ID of the tenant
         limit:
           type: integer
           default: 30
@@ -110,13 +106,6 @@ components:
     SyncContactRequest:
       type: object
       properties:
-        accountId:
-          type: integer
-          format: int64
-        tenantId:
-          type: integer
-          format: int64
-          description: ID of the tenant
         phoneNumbers:
           type: array
           items:
@@ -125,6 +114,6 @@ components:
     SyncContactResponse:
       type: object
       properties:
-        contacts:
+        accountId:
           type: integer
           format: int64
