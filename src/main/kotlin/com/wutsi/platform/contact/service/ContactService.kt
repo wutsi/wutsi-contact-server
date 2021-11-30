@@ -27,6 +27,9 @@ class ContactService(
     }
 
     fun addContact(accountId: Long, contactId: Long, tenantId: Long): ContactEntity? {
+        if (accountId == contactId)
+            return null
+
         val opt = dao.findByAccountIdAndContactIdAndTenantId(accountId, contactId, tenantId)
         if (opt.isPresent)
             return null

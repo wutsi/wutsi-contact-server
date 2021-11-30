@@ -18,6 +18,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.test.context.jdbc.Sql
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(value = ["/db/clean.sql", "/db/SyncContactsController.sql"])
@@ -75,5 +76,28 @@ public class SyncContactsControllerTest : AbstractSecuredController() {
 
         assertEquals(1L, contacts[1].accountId)
         assertEquals(666L, contacts[1].contactId)
+    }
+
+    @Test
+    public fun self() {
+        // GIVEN
+        val req1 = SearchAccountRequest(phoneNumber = "+237699505679")
+        val acc1 = AccountSummary(1L)
+        doReturn(SearchAccountResponse(listOf(acc1))).whenever(accountApi).searchAccount(req1)
+
+        // WHEN
+        val request = SyncContactRequest(
+            phoneNumbers = listOf("237699505679")
+        )
+        val response = rest.postForEntity(url, request, SyncContactResponse::class.java)
+
+        assertEquals(200, response.statusCodeValue)
+
+        // THEN
+        val phone = phoneDao.findByAccountIdAndNumberAndTenantId(1, "+237699505679", 1)
+        assertTrue(phone.isPresent)
+
+        val contacts = contactDao.findAll().sortedBy { it.contactId }
+        assertEquals(0, contacts.size)
     }
 }
