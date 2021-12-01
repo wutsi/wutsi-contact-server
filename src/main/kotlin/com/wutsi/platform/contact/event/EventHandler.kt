@@ -44,7 +44,7 @@ class EventHandler(
         logger.add("amount", payload.amount)
         logger.add("currency", payload.currency)
         logger.add("transaction_id", payload.transactionId)
-        logger.add("user_id", payload.userId)
+        logger.add("accountId", payload.accountId)
         logger.add("recipient_id", payload.recipientId)
 
         try {

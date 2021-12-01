@@ -23,7 +23,7 @@ class ContactService(
     fun addContact(payload: TransactionEventPayload): ContactEntity? {
         if (payload.recipientId == null)
             return null
-        return addContact(payload.userId, payload.recipientId!!, payload.tenantId)
+        return addContact(payload.accountId, payload.recipientId!!, payload.tenantId)
     }
 
     fun addContact(accountId: Long, contactId: Long, tenantId: Long): ContactEntity? {

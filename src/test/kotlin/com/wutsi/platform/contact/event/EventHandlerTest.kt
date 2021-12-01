@@ -44,7 +44,11 @@ internal class EventHandlerTest {
 
         // THEN
         val contact =
-            contactDao.findByAccountIdAndContactIdAndTenantId(payload.userId, payload.recipientId!!, payload.tenantId)
+            contactDao.findByAccountIdAndContactIdAndTenantId(
+                payload.accountId,
+                payload.recipientId!!,
+                payload.tenantId
+            )
         assertTrue(contact.isPresent)
     }
 
@@ -62,19 +66,24 @@ internal class EventHandlerTest {
 
         // THEN
         val contact =
-            contactDao.findByAccountIdAndContactIdAndTenantId(payload.userId, payload.recipientId!!, payload.tenantId)
+            contactDao.findByAccountIdAndContactIdAndTenantId(
+                payload.accountId,
+                payload.recipientId!!,
+                payload.tenantId
+            )
         assertTrue(contact.isPresent)
     }
 
-    private fun createTransactionEventPayload(userId: Long, recipientId: Long, type: String) = TransactionEventPayload(
-        tenantId = 1,
-        type = type,
-        currency = "XAF",
-        amount = 5000.0,
-        recipientId = recipientId,
-        userId = userId,
-        transactionId = UUID.randomUUID().toString()
-    )
+    private fun createTransactionEventPayload(accountId: Long, recipientId: Long, type: String) =
+        TransactionEventPayload(
+            tenantId = 1,
+            type = type,
+            currency = "XAF",
+            amount = 5000.0,
+            recipientId = recipientId,
+            accountId = accountId,
+            transactionId = UUID.randomUUID().toString()
+        )
 
     // AccountCreated
     @Test
