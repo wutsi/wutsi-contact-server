@@ -69,6 +69,8 @@ wutsi:
     stream:
       name: ${wutsi.application.name}
       type: local
+      subscriptions:
+        - wutsi-payment
     tracing:
       client-id: ${wutsi.application.name}
       device-id-provider:
