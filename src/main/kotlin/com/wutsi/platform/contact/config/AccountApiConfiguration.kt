@@ -5,7 +5,6 @@ import com.wutsi.platform.account.Environment.PRODUCTION
 import com.wutsi.platform.account.Environment.SANDBOX
 import com.wutsi.platform.account.WutsiAccountApi
 import com.wutsi.platform.account.WutsiAccountApiBuilder
-import com.wutsi.platform.core.security.feign.FeignApiKeyRequestInterceptor
 import com.wutsi.platform.core.security.feign.FeignAuthorizationRequestInterceptor
 import com.wutsi.platform.core.stream.EventStream
 import com.wutsi.platform.core.stream.EventSubscription
@@ -19,7 +18,6 @@ import org.springframework.core.env.Profiles
 public class AccountApiConfiguration(
     private val authorizationRequestInterceptor: FeignAuthorizationRequestInterceptor,
     private val tracingRequestInterceptor: FeignTracingRequestInterceptor,
-    private val apiKeyRequestInterceptor: FeignApiKeyRequestInterceptor,
     private val mapper: ObjectMapper,
     private val env: Environment,
     private val eventStream: EventStream,
@@ -30,7 +28,6 @@ public class AccountApiConfiguration(
             env = environment(),
             mapper = mapper,
             interceptors = listOf(
-                apiKeyRequestInterceptor,
                 tracingRequestInterceptor,
                 authorizationRequestInterceptor
             )
