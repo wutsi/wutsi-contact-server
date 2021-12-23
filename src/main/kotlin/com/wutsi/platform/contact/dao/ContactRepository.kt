@@ -8,7 +8,7 @@ import java.util.Optional
 
 @Repository
 interface ContactRepository : CrudRepository<ContactEntity, Long> {
-    fun findByAccountIdAndTenantId(accountId: Long, tenantId: Long, pageable: Pageable): List<ContactEntity>
+    fun findByAccountIdAndTenantId(accountId: Long, tenantId: Long?, pageable: Pageable): List<ContactEntity>
     fun findByAccountIdAndContactIdAndTenantId(
         accountId: Long,
         contactId: Long,

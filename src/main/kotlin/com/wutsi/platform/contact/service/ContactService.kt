@@ -6,6 +6,7 @@ import com.wutsi.platform.contact.dao.ContactRepository
 import com.wutsi.platform.contact.dto.SearchContactRequest
 import com.wutsi.platform.contact.entity.ContactEntity
 import com.wutsi.platform.contact.entity.PhoneEntity
+import com.wutsi.platform.core.tracing.TracingContext
 import com.wutsi.platform.payment.event.TransactionEventPayload
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
@@ -14,9 +15,11 @@ import org.springframework.stereotype.Service
 class ContactService(
     private val dao: ContactRepository,
     private val accountApi: WutsiAccountApi,
+    private val tracingContext: TracingContext
 ) {
-    fun search(request: SearchContactRequest, tenantId: Long): List<ContactEntity> {
+    fun search(request: SearchContactRequest): List<ContactEntity> {
         val pageable = PageRequest.of(request.offset / request.limit, request.limit)
+        val tenantId = tracingContext.tenantId()!!.toLong()
         return dao.findByAccountIdAndTenantId(request.accountId, tenantId, pageable)
     }
 
