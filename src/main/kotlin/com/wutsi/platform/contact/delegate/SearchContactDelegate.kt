@@ -12,7 +12,6 @@ public class SearchContactDelegate(
     private val logger: KVLogger,
 ) {
     public fun invoke(request: SearchContactRequest): SearchContactResponse {
-        logger.add("account_id", request.accountId)
         logger.add("limit", request.limit)
         logger.add("offset", request.offset)
 

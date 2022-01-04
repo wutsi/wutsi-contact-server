@@ -15,12 +15,21 @@ import org.springframework.stereotype.Service
 class ContactService(
     private val dao: ContactRepository,
     private val accountApi: WutsiAccountApi,
-    private val tracingContext: TracingContext
+    private val tracingContext: TracingContext,
+    private val securityManager: SecurityManager
 ) {
     fun search(request: SearchContactRequest): List<ContactEntity> {
         val pageable = PageRequest.of(request.offset / request.limit, request.limit)
         val tenantId = tracingContext.tenantId()!!.toLong()
-        return dao.findByAccountIdAndTenantId(request.accountId, tenantId, pageable)
+        return if (request.contactIds.isEmpty())
+            dao.findByAccountIdAndTenantId(securityManager.currentUserId(), tenantId, pageable)
+        else
+            dao.findByAccountIdAndContactIdInAndTenantId(
+                securityManager.currentUserId(),
+                request.contactIds,
+                tenantId,
+                pageable
+            )
     }
 
     fun addContact(payload: TransactionEventPayload): ContactEntity? {
@@ -29,13 +38,10 @@ class ContactService(
         return addContact(payload.accountId, payload.recipientId!!, payload.tenantId)
     }
 
-    fun addContact(accountId: Long, contactId: Long, tenantId: Long): ContactEntity? {
-        if (accountId == contactId)
-            return null
-
+    fun addContact(accountId: Long, contactId: Long, tenantId: Long): ContactEntity {
         val opt = dao.findByAccountIdAndContactIdAndTenantId(accountId, contactId, tenantId)
         if (opt.isPresent)
-            return null
+            return opt.get()
 
         return dao.save(
             ContactEntity(

@@ -41,7 +41,7 @@ class EventHandler(
         logger.add("recipient_id", payload.recipientId)
 
         val contact = contactService.addContact(payload)
-        logger.add("contact_added", contact != null)
+        logger.add("contact_id", contact?.id)
     }
 
     private fun onAccountCreated(payload: AccountCreatedPayload) {

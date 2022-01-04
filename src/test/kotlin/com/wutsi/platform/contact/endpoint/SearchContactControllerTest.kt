@@ -28,7 +28,7 @@ public class SearchContactControllerTest : AbstractSecuredController() {
     public fun invoke() {
         // WHEN
         val request = SearchContactRequest(
-            accountId = 100L,
+            limit = 100
         )
         val response = rest.postForEntity(url, request, SearchContactResponse::class.java)
 
@@ -37,17 +37,16 @@ public class SearchContactControllerTest : AbstractSecuredController() {
 
         val contacts = response.body.contacts.sortedBy { it.contactId }
         assertEquals(3, contacts.size)
-        assertEquals(1L, contacts[0].contactId)
-        assertEquals(2L, contacts[1].contactId)
-        assertEquals(3L, contacts[2].contactId)
+        assertEquals(100L, contacts[0].contactId)
+        assertEquals(200L, contacts[1].contactId)
+        assertEquals(300L, contacts[2].contactId)
     }
 
     @Test
     public fun notFound() {
         // WHEN
-        val request = SearchContactRequest(
-            accountId = 999L,
-        )
+        rest = createResTemplate(subjectId = 999L)
+        val request = SearchContactRequest()
         val response = rest.postForEntity(url, request, SearchContactResponse::class.java)
 
         // THEN

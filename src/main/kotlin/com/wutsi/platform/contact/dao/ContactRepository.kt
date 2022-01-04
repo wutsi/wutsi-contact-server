@@ -9,9 +9,17 @@ import java.util.Optional
 @Repository
 interface ContactRepository : CrudRepository<ContactEntity, Long> {
     fun findByAccountIdAndTenantId(accountId: Long, tenantId: Long?, pageable: Pageable): List<ContactEntity>
+
     fun findByAccountIdAndContactIdAndTenantId(
         accountId: Long,
         contactId: Long,
         tenantId: Long
     ): Optional<ContactEntity>
+
+    fun findByAccountIdAndContactIdInAndTenantId(
+        accountId: Long,
+        contactId: List<Long>,
+        tenantId: Long,
+        pageable: Pageable
+    ): List<ContactEntity>
 }

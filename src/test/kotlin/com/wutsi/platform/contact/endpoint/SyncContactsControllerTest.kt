@@ -12,13 +12,14 @@ import com.wutsi.platform.contact.dto.SyncContactRequest
 import com.wutsi.platform.contact.dto.SyncContactResponse
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.test.context.jdbc.Sql
+import org.springframework.web.client.HttpServerErrorException
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(value = ["/db/clean.sql", "/db/SyncContactsController.sql"])
@@ -89,15 +90,8 @@ public class SyncContactsControllerTest : AbstractSecuredController() {
         val request = SyncContactRequest(
             phoneNumbers = listOf("237699505679")
         )
-        val response = rest.postForEntity(url, request, SyncContactResponse::class.java)
-
-        assertEquals(200, response.statusCodeValue)
-
-        // THEN
-        val phone = phoneDao.findByAccountIdAndNumberAndTenantId(1, "+237699505679", 1)
-        assertTrue(phone.isPresent)
-
-        val contacts = contactDao.findAll().sortedBy { it.contactId }
-        assertEquals(0, contacts.size)
+        assertThrows<HttpServerErrorException.InternalServerError> {
+            rest.postForEntity(url, request, SyncContactResponse::class.java)
+        }
     }
 }
