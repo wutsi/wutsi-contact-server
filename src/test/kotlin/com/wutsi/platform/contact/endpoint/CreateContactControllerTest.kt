@@ -42,7 +42,7 @@ public class CreateContactControllerTest : AbstractSecuredController() {
         // THEN
         assertEquals(200, response.statusCodeValue)
 
-        val contact = dao.findById(response.body.id).get()
+        val contact = dao.findById(response.body?.id).get()
         assertEquals(request.contactId, contact.contactId)
     }
 
@@ -57,7 +57,7 @@ public class CreateContactControllerTest : AbstractSecuredController() {
         // THEN
         assertEquals(200, response.statusCodeValue)
 
-        val contact = dao.findById(response.body.id).get()
+        val contact = dao.findById(response.body?.id).get()
         assertEquals(request.contactId, contact.contactId)
     }
 

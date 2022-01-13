@@ -4,7 +4,7 @@ import com.wutsi.platform.contact.dto.CreateContactRequest
 import com.wutsi.platform.contact.dto.CreateContactResponse
 import com.wutsi.platform.contact.service.ContactService
 import com.wutsi.platform.contact.service.SecurityManager
-import com.wutsi.platform.core.tracing.TracingContext
+import com.wutsi.platform.core.logging.KVLogger
 import org.springframework.stereotype.Service
 import javax.transaction.Transactional
 
@@ -12,17 +12,20 @@ import javax.transaction.Transactional
 public class CreateContactDelegate(
     private val service: ContactService,
     private val securityManager: SecurityManager,
-    private val tracingContext: TracingContext,
+    private val logger: KVLogger,
 ) {
     @Transactional
     public fun invoke(request: CreateContactRequest): CreateContactResponse {
+        val accountId = securityManager.currentUserId()
+        logger.add("account_id", accountId)
+        logger.add("contact_id", request.contactId)
+
         val contact = service.addContact(
-            accountId = securityManager.currentUserId(),
-            contactId = request.contactId,
-            tenantId = tracingContext.tenantId()!!.toLong()
+            accountId = accountId,
+            contactId = request.contactId
         )
         return CreateContactResponse(
-            id = contact.id!!
+            id = contact?.id ?: -1
         )
     }
 }

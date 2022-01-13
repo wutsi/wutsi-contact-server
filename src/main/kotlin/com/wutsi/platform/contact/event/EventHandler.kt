@@ -26,6 +26,9 @@ class EventHandler(
         } else if (com.wutsi.platform.account.event.EventURN.ACCOUNT_CREATED.urn == event.type) {
             val payload = objectMapper.readValue(event.payload, AccountCreatedPayload::class.java)
             onAccountCreated(payload)
+        } else if (com.wutsi.platform.contact.event.EventURN.SYNC_REQUEST.urn == event.type) {
+            val payload = objectMapper.readValue(event.payload, SyncRequestPayload::class.java)
+            onSyncRequest(payload)
         }
     }
 
@@ -33,7 +36,6 @@ class EventHandler(
         if (payload.type != "TRANSFER")
             return
 
-        logger.add("tenant_id", payload.tenantId)
         logger.add("amount", payload.amount)
         logger.add("currency", payload.currency)
         logger.add("transaction_id", payload.transactionId)
@@ -45,11 +47,24 @@ class EventHandler(
     }
 
     private fun onAccountCreated(payload: AccountCreatedPayload) {
-        logger.add("tenant_id", payload.tenantId)
         logger.add("account_id", payload.accountId)
         logger.add("phone_number", payload.phoneNumber)
 
-        val count = phoneService.addContacts(payload)
+        val count = contactService.addContacts(payload)
         logger.add("count", count)
+    }
+
+    private fun onSyncRequest(payload: SyncRequestPayload) {
+        logger.add("account_id", payload.accountId)
+        logger.add("phone_number", payload.phoneNumber)
+
+        // Add the phone
+        val phone = phoneService.addPhone(payload)
+        if (phone != null) {
+            logger.add("phone_id", phone.id)
+
+            val contact = contactService.addContact(phone)
+            logger.add("contact_id", contact?.id)
+        }
     }
 }

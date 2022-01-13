@@ -1,49 +1,41 @@
 package com.wutsi.platform.contact.service
 
-import com.google.i18n.phonenumbers.PhoneNumberUtil
-import com.wutsi.platform.account.event.AccountCreatedPayload
 import com.wutsi.platform.contact.dao.PhoneRepository
 import com.wutsi.platform.contact.entity.PhoneEntity
+import com.wutsi.platform.contact.event.SyncRequestPayload
 import org.springframework.stereotype.Service
+import javax.transaction.Transactional
 
 @Service
 class PhoneService(
     private val dao: PhoneRepository,
-    private val contactService: ContactService,
-    private val phoneUtil: PhoneNumberUtil,
+    private val phoneNumberSanitizer: PhoneNumberSanitizer,
+    private val tenantProvider: TenantProvider
 ) {
-    fun addPhone(accountId: Long, tenantId: Long, phoneNumber: String): PhoneEntity? {
-        val xphoneNumber = normalizePhone(phoneNumber)
-        val opt = dao.findByAccountIdAndNumberAndTenantId(accountId, xphoneNumber, tenantId)
+    @Transactional
+    fun addPhone(payload: SyncRequestPayload): PhoneEntity? {
+        val tenant = tenantProvider.get()
+        val xphoneNumber = phoneNumberSanitizer.sanitize(payload.phoneNumber, tenant)
+            ?: return null
+
+        val opt = dao.findByAccountIdAndNumberAndTenantId(payload.accountId, xphoneNumber, tenant.id)
         if (opt.isPresent)
-            return null
+            return opt.get()
 
         return dao.save(
             PhoneEntity(
-                accountId = accountId,
+                accountId = payload.accountId,
                 number = xphoneNumber,
-                tenantId = tenantId
+                tenantId = tenant.id
             )
         )
     }
 
-    fun addContacts(payload: AccountCreatedPayload): Int {
-        val phones = dao.findByNumberAndTenantId(normalizePhone(payload.phoneNumber), payload.tenantId)
-        var added = 0
-        phones.forEach {
-            if (contactService.addContact(it.accountId, payload.accountId, payload.tenantId) != null)
-                added++
-        }
-        return added
-    }
+    fun findPhones(phoneNumber: String): List<PhoneEntity> {
+        val tenant = tenantProvider.get()
+        val xphoneNumber = phoneNumberSanitizer.sanitize(phoneNumber, tenant)
+            ?: return emptyList()
 
-    private fun normalizePhone(phoneNumber: String): String {
-        return try {
-            val number = if (phoneNumber.startsWith("+")) phoneNumber else "+$phoneNumber"
-            val phone = phoneUtil.parse(number, "")
-            phoneUtil.format(phone, PhoneNumberUtil.PhoneNumberFormat.E164)
-        } catch (ex: Exception) {
-            phoneNumber
-        }
+        return dao.findByNumberAndTenantId(xphoneNumber, tenant.id)
     }
 }

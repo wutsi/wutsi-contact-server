@@ -35,7 +35,7 @@ public class SearchContactControllerTest : AbstractSecuredController() {
         // THEN
         assertEquals(200, response.statusCodeValue)
 
-        val contacts = response.body.contacts.sortedBy { it.contactId }
+        val contacts = response.body!!.contacts.sortedBy { it.contactId }
         assertEquals(3, contacts.size)
         assertEquals(100L, contacts[0].contactId)
         assertEquals(200L, contacts[1].contactId)
@@ -52,7 +52,7 @@ public class SearchContactControllerTest : AbstractSecuredController() {
         // THEN
         assertEquals(200, response.statusCodeValue)
 
-        val contacts = response.body.contacts
+        val contacts = response.body!!.contacts
         assertEquals(0, contacts.size)
     }
 }
