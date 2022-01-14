@@ -63,6 +63,7 @@ wutsi:
   platform:
     security:
       type: jwt
+      api-key: 10d048e2-7568-11ec-9955-06df65522ffd
     cache:
       name: ${wutsi.application.name}
       type: none
