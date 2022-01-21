@@ -25,7 +25,7 @@ public class CreateContactDelegate(
             contactId = request.contactId
         )
         return CreateContactResponse(
-            id = contact?.id ?: -1
+            id = contact.id ?: -1
         )
     }
 }

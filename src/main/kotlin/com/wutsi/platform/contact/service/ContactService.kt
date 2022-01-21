@@ -46,8 +46,8 @@ class ContactService(
         val phones = phoneService.findPhones(payload.phoneNumber)
         var added = 0
         phones.forEach {
-            if (addContact(it.accountId, payload.accountId) != null)
-                added++
+            addContact(it.accountId, payload.accountId)
+            added++
         }
         return added
     }

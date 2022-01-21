@@ -15,7 +15,6 @@ import com.wutsi.platform.core.tracing.TracingContext
 import com.wutsi.platform.core.tracing.spring.SpringTracingRequestInterceptor
 import com.wutsi.platform.core.util.URN
 import com.wutsi.platform.tenant.WutsiTenantApi
-import com.wutsi.platform.tenant.dto.Fee
 import com.wutsi.platform.tenant.dto.GetTenantResponse
 import com.wutsi.platform.tenant.dto.Logo
 import com.wutsi.platform.tenant.dto.MobileCarrier
@@ -83,29 +82,6 @@ abstract class AbstractSecuredController {
                     )
                 )
             ),
-            fees = listOf(
-                Fee(
-                    transactionType = "transfer",
-                    applyToSender = false,
-                    business = true,
-                    amount = 0.0,
-                    percent = 0.02
-                ),
-                Fee(
-                    transactionType = "transfer",
-                    applyToSender = true,
-                    business = false,
-                    amount = 100.0,
-                    percent = 0.0
-                ),
-                Fee(
-                    transactionType = "payment",
-                    applyToSender = false,
-                    business = true,
-                    amount = 0.0,
-                    percent = 0.04
-                ),
-            )
         )
         doReturn(GetTenantResponse(tenant)).whenever(tenantApi).getTenant(any())
 
