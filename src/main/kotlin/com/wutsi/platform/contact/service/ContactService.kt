@@ -59,7 +59,7 @@ class ContactService(
                 phoneNumber = phone.number
             )
         ).accounts
-        return if (contacts.isEmpty())
+        return if (contacts.isEmpty() || phone.accountId == contacts[0].id)
             null
         else
             addContact(phone.accountId, contacts[0].id)

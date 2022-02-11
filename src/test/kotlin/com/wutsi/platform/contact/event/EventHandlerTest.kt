@@ -16,11 +16,9 @@ import com.wutsi.platform.payment.event.EventURN
 import com.wutsi.platform.payment.event.TransactionEventPayload
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.test.context.jdbc.Sql
 import java.util.UUID
 
@@ -182,9 +180,7 @@ internal class EventHandlerTest : AbstractSecuredController() {
 
         // WHEN
         val event = createEvent(payload)
-        assertThrows<DataIntegrityViolationException> {
-            eventHandler.onEvent(event)
-        }
+        eventHandler.onEvent(event)
     }
 
     private fun createEvent(payload: SyncRequestPayload) = Event(
