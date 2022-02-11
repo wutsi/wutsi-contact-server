@@ -19,7 +19,7 @@ class PhoneService(
         val tenant = tenantProvider.get()
         val xphoneNumber = phoneNumberSanitizer.sanitize(payload.phoneNumber, tenant)
             ?: return null
-        logger.add("phone_number_formatter", xphoneNumber)
+        logger.add("phone_number_formatted", xphoneNumber)
 
         val opt = dao.findByAccountIdAndNumberAndTenantId(payload.accountId, xphoneNumber, tenant.id)
         if (opt.isPresent)

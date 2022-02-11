@@ -1,6 +1,7 @@
 package com.wutsi.platform.contact.event
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.google.i18n.phonenumbers.NumberParseException
 import com.wutsi.platform.account.event.AccountCreatedPayload
 import com.wutsi.platform.contact.service.ContactService
 import com.wutsi.platform.contact.service.PhoneService
@@ -59,12 +60,17 @@ class EventHandler(
         logger.add("phone_number", payload.phoneNumber)
 
         // Add the phone
-        val phone = phoneService.addPhone(payload)
-        if (phone != null) {
-            logger.add("phone_id", phone.id)
+        try {
+            val phone = phoneService.addPhone(payload)
+            if (phone != null) {
+                logger.add("phone_id", phone.id)
 
-            val contact = contactService.addContact(phone)
-            logger.add("contact_id", contact?.id)
+                val contact = contactService.addContact(phone)
+                logger.add("contact_id", contact?.id)
+            }
+        } catch (ex: NumberParseException) {
+            logger.add("sync_error", ex.message)
+            logger.add("sync_exception", ex.javaClass.name)
         }
     }
 }
